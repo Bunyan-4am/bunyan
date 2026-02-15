@@ -15,7 +15,7 @@ export async function POST(request) {
     await new Promise((r) => setTimeout(r, 1500)); // Simulate processing
 
     const scannedData = {
-      vendor: "GreenSteel Arabia",
+      vendor: "GreenSteel Egypt",
       date: "2026-02-10",
       total: 384000,
       items: [
@@ -23,7 +23,7 @@ export async function POST(request) {
       ],
       tax: 57600,
       grandTotal: 441600,
-      currency: "SAR",
+      currency: "EGP",
       confidence: 0.95,
       suggestions: [
         { message: "Alternative supplier found with 8% lower cost", savings: 30720 },

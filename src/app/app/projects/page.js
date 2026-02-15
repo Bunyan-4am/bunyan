@@ -67,11 +67,11 @@ function CreateProjectModal({ isOpen, onClose, onSubmit }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create New Project" description="Add a new construction project to your portfolio" size="lg">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input label="Project Name" placeholder="e.g., NEOM Residential Phase 3" value={form.name} onChange={handleChange("name")} required />
+        <Input label="Project Name" placeholder="e.g., New Capital Residential Phase 3" value={form.name} onChange={handleChange("name")} required />
         <Textarea label="Description" placeholder="Brief project description..." value={form.description} onChange={handleChange("description")} />
         <div className="grid grid-cols-2 gap-4">
-          <Input label="Location" placeholder="Riyadh, Saudi Arabia" value={form.location} onChange={handleChange("location")} />
-          <Input label="Budget (SAR)" type="number" placeholder="5000000" value={form.budget} onChange={handleChange("budget")} />
+          <Input label="Location" placeholder="Cairo, Egypt" value={form.location} onChange={handleChange("location")} />
+          <Input label="Budget (EGP)" type="number" placeholder="5000000" value={form.budget} onChange={handleChange("budget")} />
         </div>
         <div className="grid grid-cols-3 gap-4">
           <Select

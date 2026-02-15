@@ -6,7 +6,7 @@ import CountUp from "./CountUp";
 const stats = [
   { end: 4200, prefix: "", suffix: "+", label: "Tons CO₂ Reduced", icon: Leaf, iconColor: "text-accent-light" },
   { end: 67, prefix: "", suffix: "%", label: "Average Waste Reduction", icon: TrendingDown, iconColor: "text-emerald-300" },
-  { end: 2.4, prefix: "SAR ", suffix: "M", label: "Total Cost Savings", decimals: 1, icon: LineChart, iconColor: "text-blue-300" },
+  { end: 2.4, prefix: "EGP ", suffix: "M", label: "Total Cost Savings", decimals: 1, icon: LineChart, iconColor: "text-blue-300" },
   { end: 150, prefix: "", suffix: "+", label: "Projects Optimized", icon: Target, iconColor: "text-amber-300" },
 ];
 

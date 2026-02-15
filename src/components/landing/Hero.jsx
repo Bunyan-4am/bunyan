@@ -117,7 +117,7 @@ export default function Hero() {
           <div data-aos="fade-up" data-aos-delay="400" className="mt-14 flex items-center gap-10">
             {[
               { label: "CO₂ Reduced", value: "4,200+", unit: "tons" },
-              { label: "Cost Saved", value: "SAR 2.4M+" },
+                { label: "Cost Saved", value: "EGP 2.4M+" },
               { label: "Active Projects", value: "150+" },
             ].map((stat, i) => (
               <div key={stat.label} className="relative">
@@ -166,7 +166,7 @@ export default function Hero() {
                 {[
                   { label: "CO₂ Saved", value: "1,240 t", icon: Leaf, bg: "from-accent/25 to-accent/10", text: "text-accent-light" },
                   { label: "Waste ↓", value: "67%", icon: TrendingDown, bg: "from-emerald-500/25 to-emerald-500/10", text: "text-emerald-300" },
-                  { label: "Budget Saved", value: "SAR 2.4M", icon: LineChart, bg: "from-blue-500/25 to-blue-500/10", text: "text-blue-300" },
+                  { label: "Budget Saved", value: "EGP 2.4M", icon: LineChart, bg: "from-blue-500/25 to-blue-500/10", text: "text-blue-300" },
                   { label: "Eco Score", value: "94/100", icon: Award, bg: "from-amber-500/25 to-amber-500/10", text: "text-amber-300" },
                 ].map((card) => (
                   <div

@@ -17,7 +17,7 @@ export async function POST(request) {
       specs: [
         { label: "Energy Rating", value: "A+" },
         { label: "Solar Gain", value: "-35%" },
-        { label: "Material Cost", value: "SAR 890/m²" },
+        { label: "Material Cost", value: "EGP 890/m\u00b2" },
         { label: "CO₂ Impact", value: "-42%" },
       ],
       materials: [

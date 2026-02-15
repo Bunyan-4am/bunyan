@@ -2,20 +2,20 @@
 
 export const mockUser = {
   id: "user-001",
-  email: "ahmed@bunyan.ai",
-  full_name: "Ahmed Al-Rashid",
-  company_name: "Al-Rashid Construction",
+  email: "mohamed@bunyan.ai",
+  full_name: "Mohamed El-Sayed",
+  company_name: "El-Sayed Construction",
   role: "contractor",
   avatar_url: null,
-  phone: "+966 50 123 4567",
+  phone: "+20 100 123 4567",
 };
 
 export const mockProjects = [
   {
     id: "proj-001",
-    name: "King Abdullah Financial District - Tower B",
+    name: "Cairo Business District - Tower B",
     description: "Mixed-use commercial tower, 45 floors with sustainable design certification",
-    location: "Riyadh, Saudi Arabia",
+    location: "Cairo, Egypt",
     status: "active",
     budget: 12500000,
     spent: 8750000,
@@ -28,9 +28,9 @@ export const mockProjects = [
   },
   {
     id: "proj-002",
-    name: "NEOM Residential Complex Phase 2",
+    name: "New Administrative Capital Residential Complex Phase 2",
     description: "Eco-friendly residential buildings with zero-waste target",
-    location: "NEOM, Saudi Arabia",
+    location: "New Administrative Capital, Egypt",
     status: "active",
     budget: 8200000,
     spent: 3280000,
@@ -43,9 +43,9 @@ export const mockProjects = [
   },
   {
     id: "proj-003",
-    name: "Jeddah Waterfront Promenade",
+    name: "Alexandria Waterfront Promenade",
     description: "Public walkway with sustainable infrastructure",
-    location: "Jeddah, Saudi Arabia",
+    location: "Alexandria, Egypt",
     status: "planning",
     budget: 3500000,
     spent: 175000,
@@ -58,9 +58,9 @@ export const mockProjects = [
   },
   {
     id: "proj-004",
-    name: "Riyadh Metro Station - Green Line",
+    name: "Cairo Metro Station - Green Line",
     description: "Underground transit station with energy-efficient systems",
-    location: "Riyadh, Saudi Arabia",
+    location: "Cairo, Egypt",
     status: "completed",
     budget: 5800000,
     spent: 5510000,
@@ -145,11 +145,11 @@ export const mockMaterials = [
     description: "Autoclaved aerated concrete blocks from recycled materials",
     price: 28,
     unit: "piece",
-    supplier_name: "Saudi Block Co.",
+    supplier_name: "Egyptian Block Co.",
     eco_score: 85,
     co2_footprint: 0.4,
     recycled_content: 60,
-    certification: "Saudi Green Mark",
+    certification: "EGBC Certified",
     in_stock: true,
     verified: true,
     image_url: null,
@@ -253,7 +253,7 @@ export const mockActivityLogs = [
   {
     id: "log-003",
     action: "ai_analysis",
-    description: "AI generated cost optimization report for NEOM Phase 2",
+    description: "AI generated cost optimization report for New Capital Phase 2",
     created_at: "2026-02-14T11:20:00Z",
   },
   {
@@ -265,7 +265,7 @@ export const mockActivityLogs = [
   {
     id: "log-005",
     action: "project_created",
-    description: "Created new project: Jeddah Waterfront Promenade",
+    description: "Created new project: Alexandria Waterfront Promenade",
     created_at: "2026-02-12T14:00:00Z",
   },
 ];

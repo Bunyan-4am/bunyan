@@ -221,7 +221,7 @@ const aiResponses = {
   },
   sustainability: {
     type: "score",
-    content: "Sustainability assessment complete for your NEOM Residential Complex Phase 2:",
+    content: "Sustainability assessment complete for your New Capital Residential Complex Phase 2:",
     data: {
       score: 94,
       rating: "Exceptional",
@@ -241,7 +241,7 @@ const aiResponses = {
       specs: [
         { label: "Energy Rating", value: "A+" },
         { label: "Solar Gain", value: "-35%" },
-        { label: "Material Cost", value: "SAR 890/m²" },
+        { label: "Material Cost", value: "EGP 890/m\u00b2" },
         { label: "CO₂ Impact", value: "-42%" },
       ],
     },

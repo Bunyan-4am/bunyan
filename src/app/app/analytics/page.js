@@ -57,7 +57,7 @@ const kpiCards = [
   },
   {
     label: "Cost Savings",
-    value: "SAR 124K",
+    value: "EGP 124K",
     change: "+19K",
     positive: true,
     icon: DollarSign,

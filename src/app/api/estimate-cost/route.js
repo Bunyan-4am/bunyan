@@ -11,7 +11,7 @@ export async function POST(request) {
 
     const estimate = {
       totalEstimate: 8500000,
-      currency: "SAR",
+      currency: "EGP",
       breakdown: [
         { category: "Structural Materials", amount: 3200000, percentage: 37.6 },
         { category: "MEP Systems", amount: 1700000, percentage: 20.0 },

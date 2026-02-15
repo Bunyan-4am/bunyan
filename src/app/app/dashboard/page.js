@@ -77,7 +77,7 @@ const statCards = [
   {
     label: "Money Saved",
     value: mockDashboardStats.moneySaved,
-    prefix: "SAR ",
+    prefix: "EGP ",
     icon: DollarSign,
     color: "text-blue-600",
     bg: "bg-blue-50",

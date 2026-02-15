@@ -5,7 +5,7 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount, currency = "SAR") {
+export function formatCurrency(amount, currency = "EGP") {
   return new Intl.NumberFormat("en-SA", {
     style: "currency",
     currency,

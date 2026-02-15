@@ -165,7 +165,7 @@ export default function SettingsPage() {
                   <Input label="Industry" value="Construction" disabled />
                   <Input label="Company Size" value="50-200 employees" disabled />
                 </div>
-                <Input label="Address" value="King Fahd Road, Riyadh, Saudi Arabia" disabled />
+                <Input label="Address" value="Nasr City, Cairo, Egypt" disabled />
                 <div className="flex items-center gap-3 pt-4 border-t border-border/50">
                   <Button onClick={handleSave}><Save size={14} /> Save Changes</Button>
                 </div>

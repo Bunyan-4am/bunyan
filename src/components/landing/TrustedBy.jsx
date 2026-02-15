@@ -1,11 +1,11 @@
 import { Building2 } from "lucide-react";
 
 const brands = [
-  { name: "NEOM" },
-  { name: "Saudi Aramco" },
-  { name: "Red Sea Global" },
-  { name: "ROSHN" },
-  { name: "Dar Al-Arkan" },
+  { name: "New Administrative Capital" },
+  { name: "Orascom Construction" },
+  { name: "Palm Hills Developments" },
+  { name: "Talaat Moustafa Group" },
+  { name: "Arabia Holding" },
 ];
 
 export default function TrustedBy() {
