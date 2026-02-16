@@ -26,6 +26,7 @@ import {
   ChevronDown,
   HardHat,
   Recycle,
+  Package,
 } from "lucide-react";
 
 const navItems = [
@@ -33,6 +34,7 @@ const navItems = [
   { href: "/app/ai-center", label: "AI Control Center", icon: Brain },
   { href: "/app/projects", label: "Projects", icon: FolderKanban },
   { href: "/app/contractors", label: "Contractors", icon: HardHat },
+  { href: "/app/materials", label: "Building Materials", icon: Package },
   { href: "/app/marketplace", label: "Recycled Market", icon: Recycle },
   { href: "/app/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/app/settings", label: "Settings", icon: Settings },
