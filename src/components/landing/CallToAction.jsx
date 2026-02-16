@@ -38,7 +38,7 @@ export default function CTA() {
           </div>
         </div>
         <div data-aos="fade-up" data-aos-delay="200" className="mt-12 flex flex-wrap justify-center gap-8 text-sm text-muted">
-          {["No credit card required", "14-day free trial", "SOC 2 compliant"].map((item) => (
+          {["Free for Early Access Users", "Verified Suppliers Only", "Eco-Optimized Calculations", "Built for Real Projects"].map((item) => (
             <span key={item} className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-accent" />
               <span className="font-medium">{item}</span>

@@ -88,7 +88,7 @@ export default function RegisterPage() {
           </Link>
 
           <h1 className="text-3xl font-bold text-primary">Create your account</h1>
-          <p className="text-secondary mt-2">Start your 14-day free trial</p>
+          <p className="text-secondary mt-2">Get early access to the platform — completely free</p>
 
           {error && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
@@ -99,20 +99,20 @@ export default function RegisterPage() {
           <form onSubmit={handleRegister} className="mt-8 space-y-4">
             <Input
               label="Full Name"
-              placeholder="Ahmed Al-Rashid"
+              placeholder="Mohamed El-Sayed"
               value={form.fullName}
               onChange={handleChange("fullName")}
             />
             <Input
               label="Email"
               type="email"
-              placeholder="ahmed@company.com"
+              placeholder="mohamed@company.com"
               value={form.email}
               onChange={handleChange("email")}
             />
             <Input
               label="Company Name"
-              placeholder="Al-Rashid Construction"
+              placeholder="El-Sayed Construction"
               value={form.company}
               onChange={handleChange("company")}
             />
