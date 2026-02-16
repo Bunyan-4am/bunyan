@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Disallow admin/auth pages from indexing
+Disallow: /app/
+Disallow: /auth/
+
+# Allow public pages
+Allow: /
+
+# Sitemap
+Sitemap: https://bunyan.ai/sitemap.xml
