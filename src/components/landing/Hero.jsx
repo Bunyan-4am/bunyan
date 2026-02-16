@@ -243,7 +243,7 @@ export default function Hero() {
                 </div>
                 <div>
                   <div className="text-[10px] text-white/40">Cost Saved</div>
-                  <div className="text-sm font-bold text-white">SAR 2.4M</div>
+                  <div className="text-sm font-bold text-white">EGP 2.4M</div>
                 </div>
               </div>
             </div>

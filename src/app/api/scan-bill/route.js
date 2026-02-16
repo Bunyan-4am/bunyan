@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+// Friend's AI invoice analysis API
+const INVOICE_API_URL = "https://hornless-maura-uncontrovertedly.ngrok-free.dev/analyze-invoice";
+
 export async function POST(request) {
   try {
     const formData = await request.formData();
@@ -9,30 +12,42 @@ export async function POST(request) {
       return NextResponse.json({ error: "File is required" }, { status: 400 });
     }
 
-    // In production, use OCR / AI to scan bill
-    // Return mock scanned data
+    console.log(`🧾 Calling analyze-invoice API for file: ${file.name}`);
 
-    await new Promise((r) => setTimeout(r, 1500)); // Simulate processing
+    // Forward file to the friend's API
+    const apiFormData = new FormData();
+    const bytes = await file.arrayBuffer();
+    const blob = new Blob([bytes], { type: file.type || "image/jpeg" });
+    apiFormData.append("file", blob, file.name || "invoice.jpg");
 
-    const scannedData = {
-      vendor: "GreenSteel Egypt",
-      date: "2026-02-10",
-      total: 384000,
-      items: [
-        { description: "Steel Rebar Grade 60 - 120 tons", quantity: 120, unit: "ton", price: 3200, total: 384000 },
-      ],
-      tax: 57600,
-      grandTotal: 441600,
-      currency: "EGP",
-      confidence: 0.95,
-      suggestions: [
-        { message: "Alternative supplier found with 8% lower cost", savings: 30720 },
-        { message: "Eco-certified alternative available with higher recycled content", ecoImprovement: 12 },
-      ],
-    };
+    const response = await fetch(INVOICE_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: apiFormData,
+    });
 
-    return NextResponse.json(scannedData);
+    console.log(`📡 Invoice API response status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Invoice API error:", errorText);
+      return NextResponse.json({ error: "Invoice analysis failed", details: errorText }, { status: 500 });
+    }
+
+    const result = await response.json();
+    console.log("✅ Invoice API response:", JSON.stringify(result));
+
+    // Return the full response from the API
+    return NextResponse.json({
+      success: true,
+      ...result,
+    });
+
   } catch (error) {
-    return NextResponse.json({ error: "Failed to scan bill" }, { status: 500 });
+    console.error("❌ Scan bill error:", error);
+    return NextResponse.json({ error: "Failed to analyze invoice", details: error.message }, { status: 500 });
   }
 }
