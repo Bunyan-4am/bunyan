@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,87 +10,196 @@ import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageTransition, StaggerContainer, StaggerItem } from "@/components/ui/animations";
 import { useCartStore } from "@/store/useStore";
-import { mockMaterials } from "@/lib/mock-data";
+import { mockRecycledProducts } from "@/lib/mock-data";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   Search,
-  Filter,
   ShoppingCart,
   Plus,
   Minus,
   Trash2,
   BadgeCheck,
   Leaf,
-  ArrowUpDown,
   X,
-  Scale,
   Package,
-  Star,
-  ChevronDown,
+  Recycle,
+  Sparkles,
+  Heart,
+  Share2,
+  Ruler,
+  Weight,
+  Award,
+  Tag,
+  Info,
+  Eye,
 } from "lucide-react";
 
-const categories = ["All", "Steel", "Concrete", "Insulation", "Glass", "Blocks", "Wood", "Piping", "Roofing"];
+const categories = ["All", "Lighting", "Wall Art", "Home Decor", "Office Decor", "Wall Decor", "Organization"];
 
 function EcoScoreBadge({ score }) {
-  const color = score >= 90 ? "text-emerald-600 bg-emerald-50" : score >= 80 ? "text-accent bg-accent/10" : "text-amber-600 bg-amber-50";
+  const color = score >= 95 ? "text-emerald-600 bg-emerald-50" : score >= 90 ? "text-accent bg-accent/10" : "text-amber-600 bg-amber-50";
   return (
     <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${color}`}>
-      <Leaf size={10} />
-      {score}/100
+      <Recycle size={10} />
+      {score}% Eco
     </div>
   );
 }
 
-function ComparePanel({ items, onClear }) {
-  if (items.length === 0) return null;
+function ProductDetailModal({ product, isOpen, onClose }) {
+  if (!product) return null;
 
   return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 100, opacity: 0 }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white border border-border/50 rounded-2xl shadow-2xl p-4 w-[90vw] max-w-3xl"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Scale size={16} className="text-accent" />
-          <span className="text-sm font-semibold text-primary">Compare ({items.length}/3)</span>
+    <Modal isOpen={isOpen} onClose={onClose} title={product.name}>
+      <div className="space-y-6">
+        {/* Product Image */}
+        {product.image_url ? (
+          <div className="relative w-full h-64 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl overflow-hidden">
+            <Image 
+              src={product.image_url} 
+              alt={product.name}
+              fill
+              className="object-contain p-4"
+            />
+            {product.handmade && (
+              <div className="absolute top-3 left-3">
+                <Badge variant="accent" className="gap-1">
+                  <Sparkles size={10} /> Handmade
+                </Badge>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="h-64 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl flex items-center justify-center">
+            <Package size={48} className="text-primary/20" />
+          </div>
+        )}
+
+        {/* Price & Actions */}
+        <div className="flex items-center justify-between p-4 bg-background rounded-xl">
+          <div>
+            <p className="text-2xl font-bold text-primary">{formatCurrency(product.price)}</p>
+            <p className="text-xs text-muted">per {product.unit}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" className="gap-1.5">
+              <Heart size={14} /> Save
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1.5">
+              <Share2 size={14} /> Share
+            </Button>
+          </div>
         </div>
-        <button onClick={onClear} className="text-xs text-muted hover:text-danger transition-colors">
-          Clear all
-        </button>
-      </div>
-      <div className="grid grid-cols-3 gap-3">
-        {items.map((item) => (
-          <div key={item.id} className="p-3 bg-background rounded-xl">
-            <p className="text-xs font-medium text-primary truncate">{item.name}</p>
-            <div className="mt-2 space-y-1">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-muted">Price</span>
-                <span className="font-medium text-primary">{formatCurrency(item.price)}/{item.unit}</span>
+
+        {/* Eco Metrics */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+            <div className="flex items-center gap-2 mb-1">
+              <Recycle size={14} className="text-emerald-600" />
+              <span className="text-xs font-medium text-emerald-900">Recycled Content</span>
+            </div>
+            <p className="text-2xl font-bold text-emerald-700">{product.recycled_content}%</p>
+          </div>
+          <div className="p-3 bg-accent/5 rounded-xl border border-accent/20">
+            <div className="flex items-center gap-2 mb-1">
+              <Leaf size={14} className="text-accent" />
+              <span className="text-xs font-medium text-accent">Eco Score</span>
+            </div>
+            <p className="text-2xl font-bold text-accent">{product.eco_score}/100</p>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <h3 className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
+            <Info size={14} /> About This Product
+          </h3>
+          <p className="text-sm text-secondary leading-relaxed">{product.description}</p>
+        </div>
+
+        {/* Materials Source */}
+        <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+          <h4 className="text-xs font-bold text-amber-900 mb-2 flex items-center gap-1.5">
+            <Recycle size={12} /> Materials Source
+          </h4>
+          <p className="text-xs text-amber-800">{product.materials_source}</p>
+        </div>
+
+        {/* Specifications */}
+        <div>
+          <h3 className="text-sm font-bold text-primary mb-3">Specifications</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2 text-xs">
+              <Ruler size={14} className="text-muted" />
+              <div>
+                <div className="text-muted">Dimensions</div>
+                <div className="font-medium text-primary">{product.dimensions}</div>
               </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-muted">Eco Score</span>
-                <span className="font-medium text-accent">{item.eco_score}/100</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-muted">CO₂</span>
-                <span className="font-medium text-primary">{item.co2_footprint} kg/unit</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-muted">Recycled</span>
-                <span className="font-medium text-primary">{item.recycled_content}%</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <Weight size={14} className="text-muted" />
+              <div>
+                <div className="text-muted">Weight</div>
+                <div className="font-medium text-primary">{product.weight}</div>
               </div>
             </div>
           </div>
-        ))}
-        {Array.from({ length: 3 - items.length }).map((_, i) => (
-          <div key={`empty-${i}`} className="p-3 bg-background/50 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center">
-            <span className="text-[10px] text-muted">Add to compare</span>
+        </div>
+
+        {/* Features */}
+        {product.features && product.features.length > 0 && (
+          <div>
+            <h3 className="text-sm font-bold text-primary mb-3">Key Features</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {product.features.map((feature, idx) => (
+                <div key={idx} className="flex items-center gap-2 text-xs text-secondary">
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                  {feature}
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+        )}
+
+        {/* Tags */}
+        {product.tags && product.tags.length > 0 && (
+          <div>
+            <h3 className="text-sm font-bold text-primary mb-2">Tags</h3>
+            <div className="flex flex-wrap gap-1.5">
+              {product.tags.map((tag, idx) => (
+                <span key={idx} className="flex items-center gap-1 text-[10px] font-medium text-muted bg-background px-2 py-1 rounded-full border border-border/30">
+                  <Tag size={9} /> {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Creator */}
+        <div className="p-4 bg-background rounded-xl border border-border/50">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[10px] text-muted uppercase tracking-wider mb-0.5">Created By</div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-primary">{product.creator_name}</span>
+                {product.verified && <BadgeCheck size={14} className="text-accent" />}
+              </div>
+              {product.certification && (
+                <Badge variant="outline" className="text-[10px] mt-2">
+                  <Award size={9} className="mr-1" /> {product.certification}
+                </Badge>
+              )}
+            </div>
+            <Button size="sm" variant="outline">Contact Creator</Button>
+          </div>
+        </div>
+
+        {/* Add to Cart */}
+        <Button className="w-full gap-2" size="lg">
+          <Plus size={16} /> Add to Cart
+        </Button>
       </div>
-    </motion.div>
+    </Modal>
   );
 }
 
@@ -190,20 +300,22 @@ export default function MarketplacePage() {
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("eco_score");
   const [showCart, setShowCart] = useState(false);
-  const { addItem, items: cartItems, toggleCompare, compareList, clearCompare } = useCartStore();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { addItem, items: cartItems } = useCartStore();
 
-  const filteredMaterials = useMemo(() => {
-    let result = [...mockMaterials];
+  const filteredProducts = useMemo(() => {
+    let result = [...mockRecycledProducts];
 
     if (category !== "All") {
-      result = result.filter((m) => m.category === category);
+      result = result.filter((p) => p.category === category);
     }
     if (search) {
       result = result.filter(
-        (m) =>
-          m.name.toLowerCase().includes(search.toLowerCase()) ||
-          m.supplier_name.toLowerCase().includes(search.toLowerCase()) ||
-          m.category.toLowerCase().includes(search.toLowerCase())
+        (p) =>
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.creator_name.toLowerCase().includes(search.toLowerCase()) ||
+          p.category.toLowerCase().includes(search.toLowerCase()) ||
+          p.tags?.some(t => t.toLowerCase().includes(search.toLowerCase()))
       );
     }
 
@@ -222,8 +334,11 @@ export default function MarketplacePage() {
     <PageTransition>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Marketplace</h1>
-          <p className="text-sm text-secondary mt-1">Eco-certified construction materials from verified suppliers</p>
+          <div className="flex items-center gap-2 mb-1">
+            <Recycle size={28} className="text-accent" />
+            <h1 className="text-2xl font-bold text-primary">Recycled Marketplace</h1>
+          </div>
+          <p className="text-sm text-secondary">Handmade products from upcycled construction materials</p>
         </div>
         <Button variant="outline" onClick={() => setShowCart(true)} className="relative">
           <ShoppingCart size={16} />
@@ -236,6 +351,20 @@ export default function MarketplacePage() {
         </Button>
       </div>
 
+      {/* Info Banner */}
+      <div className="mb-6 p-4 bg-gradient-to-r from-accent/10 to-primary/10 rounded-xl border border-accent/20">
+        <div className="flex items-start gap-3">
+          <Sparkles size={20} className="text-accent mt-0.5 flex-shrink-0" />
+          <div>
+            <h3 className="text-sm font-bold text-primary mb-1">Supporting Circular Economy</h3>
+            <p className="text-xs text-secondary leading-relaxed">
+              Every product is handcrafted by local Egyptian artisans using salvaged materials from construction sites. 
+              Your purchase reduces waste, supports sustainable practices, and brings unique art into your space.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-6">
         <div className="flex items-center gap-2 h-9 px-3 w-64 bg-white rounded-lg border border-border/50">
@@ -243,7 +372,7 @@ export default function MarketplacePage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search materials, suppliers..."
+            placeholder="Search products, creators, tags..."
             className="w-full bg-transparent text-sm text-foreground placeholder:text-muted/60 outline-none"
           />
         </div>
@@ -257,7 +386,7 @@ export default function MarketplacePage() {
               className={cn(
                 "px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors",
                 category === cat
-                  ? "bg-primary text-white"
+                  ? "bg-accent text-white"
                   : "bg-white border border-border/50 text-secondary hover:text-primary"
               )}
             >
@@ -279,96 +408,122 @@ export default function MarketplacePage() {
         </select>
       </div>
 
-      {/* Materials Grid */}
-      {filteredMaterials.length === 0 ? (
+      {/* Products Grid */}
+      {filteredProducts.length === 0 ? (
         <EmptyState
           icon="search"
-          title="No materials found"
+          title="No products found"
           description="Try adjusting your search or filters"
         />
       ) : (
         <StaggerContainer className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-          {filteredMaterials.map((material) => {
-            const isInCompare = compareList.some((c) => c.id === material.id);
-            return (
-              <StaggerItem key={material.id}>
-                <Card hover className="overflow-hidden">
-                  {/* Image placeholder */}
-                  <div className="h-36 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center relative">
-                    <Package size={36} className="text-primary/20" />
-                    {material.verified && (
-                      <div className="absolute top-3 left-3">
-                        <Badge variant="accent" className="gap-1">
-                          <BadgeCheck size={10} /> Verified
-                        </Badge>
-                      </div>
-                    )}
-                    {!material.in_stock && (
-                      <div className="absolute top-3 right-3">
-                        <Badge variant="warning">Out of Stock</Badge>
-                      </div>
-                    )}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleCompare(material); }}
-                      className={cn(
-                        "absolute bottom-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center transition-all",
-                        isInCompare
-                          ? "bg-accent text-white shadow-lg shadow-accent/30"
-                          : "bg-white/80 backdrop-blur-sm text-muted hover:text-accent border border-border/50"
-                      )}
-                    >
-                      <Scale size={14} />
-                    </button>
-                  </div>
-
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <p className="text-sm font-semibold text-primary line-clamp-1">{material.name}</p>
-                        <p className="text-xs text-muted mt-0.5">{material.supplier_name}</p>
-                      </div>
-                      <EcoScoreBadge score={material.eco_score} />
+          {filteredProducts.map((product) => (
+            <StaggerItem key={product.id}>
+              <Card hover className="overflow-hidden group">
+                {/* Product Image */}
+                <div className="relative h-48 bg-gradient-to-br from-primary/5 to-accent/5 overflow-hidden">
+                  {product.image_url ? (
+                    <div className="relative w-full h-full">
+                      <Image 
+                        src={product.image_url} 
+                        alt={product.name}
+                        fill
+                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-
-                    <p className="text-xs text-secondary line-clamp-2 mb-3">{material.description}</p>
-
-                    {/* Specs */}
-                    <div className="flex gap-3 text-[10px] text-muted mb-3">
-                      <span>CO₂: {material.co2_footprint} kg</span>
-                      <span>Recycled: {material.recycled_content}%</span>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package size={40} className="text-primary/20" />
                     </div>
-
-                    {material.certification && (
-                      <Badge variant="outline" className="text-[10px] mb-3">
-                        {material.certification}
+                  )}
+                  
+                  {/* Badges */}
+                  <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                    {product.verified && (
+                      <Badge variant="accent" className="gap-1">
+                        <BadgeCheck size={10} /> Verified
                       </Badge>
                     )}
+                    {product.handmade && (
+                      <Badge className="gap-1 bg-primary text-white">
+                        <Sparkles size={10} /> Handmade
+                      </Badge>
+                    )}
+                  </div>
 
-                    <div className="flex items-end justify-between pt-3 border-t border-border/30">
-                      <div>
-                        <p className="text-lg font-bold text-primary">{formatCurrency(material.price)}</p>
-                        <p className="text-[10px] text-muted">per {material.unit}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="accent"
-                        onClick={(e) => { e.stopPropagation(); addItem(material); }}
-                        disabled={!material.in_stock}
-                      >
-                        <Plus size={14} /> Add
-                      </Button>
+                  {!product.in_stock && (
+                    <div className="absolute top-3 right-3">
+                      <Badge variant="warning">Sold Out</Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            );
-          })}
+                  )}
+
+                  {/* Quick View Button */}
+                  <button
+                    onClick={() => setSelectedProduct(product)}
+                    className="absolute bottom-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
+                  >
+                    <Eye size={16} className="text-primary" />
+                  </button>
+                </div>
+
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-primary line-clamp-1">{product.name}</p>
+                      <p className="text-xs text-muted mt-0.5">{product.creator_name}</p>
+                    </div>
+                    <EcoScoreBadge score={product.eco_score} />
+                  </div>
+
+                  <p className="text-xs text-secondary line-clamp-2 mb-3">{product.description}</p>
+
+                  {/* Recycled Content Badge */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      <Recycle size={9} /> {product.recycled_content}% Recycled
+                    </div>
+                    {product.customizable && (
+                      <Badge variant="outline" className="text-[10px]">Customizable</Badge>
+                    )}
+                  </div>
+
+                  {/* Tags */}
+                  {product.tags && product.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {product.tags.slice(0, 3).map((tag, idx) => (
+                        <span key={idx} className="text-[9px] text-muted bg-background px-1.5 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-end justify-between pt-3 border-t border-border/30">
+                    <div>
+                      <p className="text-lg font-bold text-primary">{formatCurrency(product.price)}</p>
+                      <p className="text-[10px] text-muted">per {product.unit}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="accent"
+                      onClick={(e) => { e.stopPropagation(); addItem(product); }}
+                      disabled={!product.in_stock}
+                    >
+                      <Plus size={14} /> Add
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </StaggerItem>
+          ))}
         </StaggerContainer>
       )}
 
-      <AnimatePresence>
-        <ComparePanel items={compareList} onClear={clearCompare} />
-      </AnimatePresence>
+      <ProductDetailModal 
+        product={selectedProduct} 
+        isOpen={!!selectedProduct} 
+        onClose={() => setSelectedProduct(null)} 
+      />
 
       <CartSidebar isOpen={showCart} onClose={() => setShowCart(false)} />
     </PageTransition>

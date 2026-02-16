@@ -55,7 +55,7 @@ const contractors = [
     completedProjects: 85,
     activeProjects: 12,
     specializations: ["Commercial Towers", "Mixed-Use", "Green Buildings"],
-    certifications: ["EGBC Gold", "ISO 14001", "ISO 9001"],
+    certifications: ["LEED Gold", "LEED AP BD+C", "GPRS Green Pyramid", "EDGE Advanced", "ISO 14001", "ISO 9001", "WELL Silver"],
     ecoScore: 94,
     avgBudget: "EGP 5M - 50M",
     description:
@@ -117,7 +117,7 @@ const contractors = [
     completedProjects: 52,
     activeProjects: 8,
     specializations: ["Residential", "Eco-Villages", "Renovations"],
-    certifications: ["EGBC Silver", "ISO 14001"],
+    certifications: ["LEED Silver", "EDGE Certified", "GPRS Silver Pyramid", "ISO 14001", "BREEAM In-Use"],
     ecoScore: 91,
     avgBudget: "EGP 2M - 25M",
     description:
@@ -167,7 +167,7 @@ const contractors = [
     completedProjects: 34,
     activeProjects: 5,
     specializations: ["Infrastructure", "Public Works", "Transport"],
-    certifications: ["EGBC Bronze", "ISO 9001"],
+    certifications: ["LEED Silver", "Envision Verified", "GPRS Bronze Pyramid", "ISO 9001", "ISO 14001", "CEEQUAL Excellent"],
     ecoScore: 87,
     avgBudget: "EGP 10M - 80M",
     description:
@@ -217,7 +217,7 @@ const contractors = [
     completedProjects: 63,
     activeProjects: 9,
     specializations: ["Healthcare", "Education", "Smart Buildings"],
-    certifications: ["EGBC Gold", "ISO 14001", "ISO 45001"],
+    certifications: ["LEED Gold", "WELL Gold", "GPRS Green Pyramid", "EDGE Advanced", "ISO 14001", "ISO 45001", "Fitwel 2-Star"],
     ecoScore: 92,
     avgBudget: "EGP 3M - 30M",
     description:
@@ -267,7 +267,7 @@ const contractors = [
     completedProjects: 21,
     activeProjects: 7,
     specializations: ["Hospitality", "Retail", "Landscape Design"],
-    certifications: ["EGBC Silver", "LEED AP"],
+    certifications: ["LEED AP ID+C", "LEED Silver", "BREEAM Good", "GPRS Silver Pyramid", "EDGE Certified", "Living Building Petal"],
     ecoScore: 89,
     avgBudget: "EGP 1M - 15M",
     description:
@@ -448,12 +448,28 @@ function ContractorCard({ contractor, onViewProfile }) {
             </div>
 
             {/* Certifications */}
-            <div className="flex items-center gap-1.5 mt-3">
-              {contractor.certifications.slice(0, 3).map((cert) => (
-                <span key={cert} className="flex items-center gap-1 text-[10px] font-semibold text-accent bg-accent/5 px-2 py-0.5 rounded-full">
-                  <Shield size={10} /> {cert}
-                </span>
-              ))}
+            <div className="flex flex-wrap items-center gap-1.5 mt-3">
+              {contractor.certifications.slice(0, 4).map((cert) => {
+                const style = cert.startsWith("LEED")
+                  ? "text-green-700 bg-green-50 border-green-200"
+                  : cert.startsWith("WELL") || cert.startsWith("Fitwel")
+                  ? "text-blue-700 bg-blue-50 border-blue-200"
+                  : cert.startsWith("GPRS") || cert.includes("Pyramid")
+                  ? "text-amber-700 bg-amber-50 border-amber-200"
+                  : cert.startsWith("EDGE") || cert.startsWith("BREEAM")
+                  ? "text-teal-700 bg-teal-50 border-teal-200"
+                  : cert.startsWith("ISO")
+                  ? "text-gray-600 bg-gray-50 border-gray-200"
+                  : "text-accent bg-accent/5 border-accent/20";
+                return (
+                  <span key={cert} className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${style}`}>
+                    <Shield size={10} /> {cert}
+                  </span>
+                );
+              })}
+              {contractor.certifications.length > 4 && (
+                <span className="text-[10px] text-muted font-medium">+{contractor.certifications.length - 4} more</span>
+              )}
             </div>
 
             {/* Budget range + CTA */}
@@ -699,11 +715,24 @@ export default function ContractorsPage() {
                     <DollarSign size={13} className="text-muted" /> {selectedContractor.avgBudget}
                   </div>
                   <div className="flex flex-wrap gap-1.5 mt-1">
-                    {selectedContractor.certifications.map((cert) => (
-                      <span key={cert} className="flex items-center gap-1 text-[10px] font-semibold text-accent bg-accent/5 px-2 py-0.5 rounded-full">
-                        <Award size={10} /> {cert}
-                      </span>
-                    ))}
+                    {selectedContractor.certifications.map((cert) => {
+                      const style = cert.startsWith("LEED")
+                        ? "text-green-700 bg-green-50 border-green-200"
+                        : cert.startsWith("WELL") || cert.startsWith("Fitwel")
+                        ? "text-blue-700 bg-blue-50 border-blue-200"
+                        : cert.startsWith("GPRS") || cert.includes("Pyramid")
+                        ? "text-amber-700 bg-amber-50 border-amber-200"
+                        : cert.startsWith("EDGE") || cert.startsWith("BREEAM")
+                        ? "text-teal-700 bg-teal-50 border-teal-200"
+                        : cert.startsWith("ISO")
+                        ? "text-gray-600 bg-gray-50 border-gray-200"
+                        : "text-accent bg-accent/5 border-accent/20";
+                      return (
+                        <span key={cert} className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${style}`}>
+                          <Award size={10} /> {cert}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
