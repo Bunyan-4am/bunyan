@@ -21,7 +21,7 @@ export function Modal({ isOpen, onClose, title, description, children, className
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 m-0"
             onClick={onClose}
           />
           <motion.div
@@ -30,12 +30,12 @@ export function Modal({ isOpen, onClose, title, description, children, className
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
             className={cn(
-              "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[95vw] bg-white rounded-2xl shadow-2xl",
+              "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[95vw] bg-white rounded-2xl shadow-2xl max-h-[90vh] flex flex-col",
               sizes[size],
               className
             )}
           >
-            <div className="flex items-start justify-between p-6 pb-2">
+            <div className="flex items-start justify-between p-6 pb-2 flex-shrink-0">
               <div>
                 {title && <h2 className="text-xl font-semibold text-primary">{title}</h2>}
                 {description && (
@@ -49,7 +49,7 @@ export function Modal({ isOpen, onClose, title, description, children, className
                 <X size={18} />
               </button>
             </div>
-            <div className="p-6 pt-4">{children}</div>
+            <div className="p-6 pt-4 overflow-y-auto flex-1 overscroll-contain">{children}</div>
           </motion.div>
         </>
       )}
