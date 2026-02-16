@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -27,6 +28,47 @@ function FloatingParticles() {
         />
       ))}
     </div>
+  );
+}
+
+function TypingText() {
+  const words = ["Greener.", "Efficient."];
+  const [wordIndex, setWordIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = words[wordIndex];
+    const speed = isDeleting ? 60 : 120;
+
+    if (!isDeleting && text === currentWord) {
+      // Pause before deleting
+      const timeout = setTimeout(() => setIsDeleting(true), 2000);
+      return () => clearTimeout(timeout);
+    }
+
+    if (isDeleting && text === "") {
+      setIsDeleting(false);
+      setWordIndex((prev) => (prev + 1) % words.length);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setText(
+        isDeleting
+          ? currentWord.substring(0, text.length - 1)
+          : currentWord.substring(0, text.length + 1)
+      );
+    }, speed);
+
+    return () => clearTimeout(timeout);
+  }, [text, isDeleting, wordIndex]);
+
+  return (
+    <span className="gradient-text-accent">
+      Build {text}
+      <span className="inline-block w-[3px] h-[0.9em] bg-accent ml-1 align-middle animate-blink" />
+    </span>
   );
 }
 
@@ -81,7 +123,7 @@ export default function Hero() {
             Build Smarter.
             <br />
             <span className="relative">
-              <span className="gradient-text-accent">Build Greener.</span>
+              <TypingText />
             </span>
           </h1>
 

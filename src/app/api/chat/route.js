@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || "");
+// Friend's AI chatbot API
+const CHAT_API_URL = "https://intersidereal-nonoccidental-antony.ngrok-free.dev/chat";
 
 export async function POST(request) {
   try {
@@ -12,97 +11,86 @@ export async function POST(request) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
-    // Check if API key is configured
-    if (!process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY === "your_gemini_api_key_here") {
-      // Fallback to mock responses if no API key
-      return getMockResponse(message);
-    }
-
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      console.log(`💬 Sending to chat API: ${message.substring(0, 80)}`);
 
-      const systemPrompt = `You are an AI assistant for Bunyan, a construction intelligence platform focused on sustainable building in Egypt and MENA region. 
+      const response = await fetch(CHAT_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({ message }),
+      });
 
-Your role:
-- Help with material sourcing and eco-friendly alternatives
-- Analyze bills and suggest cost optimizations
-- Provide cost breakdowns and sustainability scores
-- Recommend eco-certified materials from Egyptian/regional suppliers
-- Generate sustainable design concepts and recommendations
+      console.log(`📡 Chat API status: ${response.status}`);
 
-Context: ${context ? JSON.stringify(context) : "General construction query"}
-
-Respond ONLY with valid JSON in one of these formats:
-
-1. For material recommendations:
-{"type":"products","content":"description","data":[{"name":"product","supplier":"company","price":number,"unit":"unit","ecoScore":number}]}
-
-2. For bill comparisons:
-{"type":"comparison","content":"description","data":[{"item":"name","current":number,"optimized":number,"savings":number}]}
-
-3. For cost breakdowns:
-{"type":"breakdown","content":"description","data":[{"category":"name","amount":number,"color":"#hex"}]}
-
-4. For sustainability scores:
-{"type":"score","content":"description","data":{"score":number,"rating":"text","description":"text","metrics":[{"label":"text","value":"text"}]}}
-
-5. For design generation (when user asks to generate, create, or show design/image):
-{"type":"design","content":"description","data":{"title":"design name","imageUrl":"detailed prompt for architectural visualization","specs":[{"label":"text","value":"text"}]}}
-
-6. For general text:
-{"type":"text","content":"your response"}
-
-Important: When type is "design", put a detailed architectural visualization prompt in imageUrl field (will be used to generate image).
-
-User question: ${message}`;
-
-      const result = await model.generateContent(systemPrompt);
-      const responseText = result.response.text();
-      
-      // Try to parse JSON from response
-      let response;
-      try {
-        // Extract JSON from markdown code blocks if present
-        const jsonMatch = responseText.match(/```json\s*([\s\S]*?)```/) || responseText.match(/```\s*([\s\S]*?)```/);
-        const jsonText = jsonMatch ? jsonMatch[1] : responseText;
-        response = JSON.parse(jsonText.trim());
-        
-        // If response is design type, generate real image URL
-        if (response.type === 'design' && response.data) {
-          const imagePrompt = response.data.imageUrl || response.data.title || "sustainable modern building with eco-friendly features";
-          
-          // Enhanced prompt for better quality
-          const enhancedPrompt = `Professional architectural visualization, ${imagePrompt}, photorealistic rendering, 8K quality, architectural digest style, extremely detailed, perfect lighting, masterpiece`;
-          
-          const encodedPrompt = encodeURIComponent(enhancedPrompt);
-          response.data.imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=768&nologo=true&private=true&model=flux-pro`;
-        }
-      } catch (parseError) {
-        // If parsing fails, return as text
-        response = {
-          type: "text",
-          content: responseText.trim()
-        };
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Chat API error:", errorText);
+        // Fall back to local mock
+        return getMockResponse(message);
       }
 
-      return NextResponse.json(response);
-    } catch (aiError) {
-      console.error("Gemini API error:", aiError);
-      // Fallback to mock response on AI error
+      const data = await response.json();
+      console.log("✅ Chat API response received");
+
+      // The API returns: { response: "text..." }
+      const aiText = data.response || data.message || "";
+
+      // Detect if the response contains structured data we can enhance
+      const structured = detectStructuredResponse(message, aiText);
+
+      return NextResponse.json(structured);
+
+    } catch (apiError) {
+      console.error("❌ Chat API fetch error:", apiError.message);
+      // Fallback to mock on network error
       return getMockResponse(message);
     }
+
   } catch (error) {
-    console.error("Chat API error:", error);
+    console.error("Chat route error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-// Fallback mock responses
+// Parse AI response and detect if we can show it in a structured format
+function detectStructuredResponse(userMessage, aiText) {
+  const lower = userMessage.toLowerCase();
+
+  // Check for price/product info in the response - show as products card
+  const priceMatches = aiText.match(/(\d[\d,\.]+)\s*(جنيه|EGP|ج\.م)/g);
+  if (priceMatches && priceMatches.length > 0 && (lower.includes("سعر") || lower.includes("price") || lower.includes("كام"))) {
+    // Extract product info from the response text
+    return {
+      type: "text",
+      content: aiText,
+    };
+  }
+
+  // For comparison/bill-related queries
+  if (lower.includes("bill") || lower.includes("compare") || lower.includes("فاتورة") || lower.includes("مقارنة")) {
+    return {
+      type: "text",
+      content: aiText,
+    };
+  }
+
+  // Default: return as rich text
+  return {
+    type: "text",
+    content: aiText,
+  };
+}
+
+// Fallback mock responses when API is unreachable
 function getMockResponse(message) {
   const lower = message.toLowerCase();
   let response;
 
-  if (lower.includes("material") || lower.includes("steel") || lower.includes("find")) {
+  if (lower.includes("material") || lower.includes("steel") || lower.includes("find") || lower.includes("مواد")) {
     response = {
       type: "products",
       content: "I found eco-certified alternatives for your requirement:",
@@ -112,7 +100,7 @@ function getMockResponse(message) {
         { name: "GreenForce Rebar G60", supplier: "Emirates Steel", price: 3100, unit: "ton", ecoScore: 85 },
       ],
     };
-  } else if (lower.includes("bill") || lower.includes("scan") || lower.includes("compare")) {
+  } else if (lower.includes("bill") || lower.includes("scan") || lower.includes("compare") || lower.includes("فاتورة")) {
     response = {
       type: "comparison",
       content: "Bill analysis complete. Here are the optimization opportunities:",
@@ -122,7 +110,7 @@ function getMockResponse(message) {
         { item: "Insulation", current: 156000, optimized: 139000, savings: 17000 },
       ],
     };
-  } else if (lower.includes("cost") || lower.includes("budget") || lower.includes("breakdown")) {
+  } else if (lower.includes("cost") || lower.includes("budget") || lower.includes("breakdown") || lower.includes("تكلفة")) {
     response = {
       type: "breakdown",
       content: "Here is the cost breakdown analysis:",
@@ -133,7 +121,7 @@ function getMockResponse(message) {
         { category: "Labor", amount: 950000, color: "#f59e0b" },
       ],
     };
-  } else if (lower.includes("sustain") || lower.includes("eco") || lower.includes("green")) {
+  } else if (lower.includes("sustain") || lower.includes("eco") || lower.includes("green") || lower.includes("بيئ")) {
     response = {
       type: "score",
       content: "Sustainability assessment complete:",
@@ -148,26 +136,10 @@ function getMockResponse(message) {
         ],
       },
     };
-  } else if (lower.includes("design") || lower.includes("generate") || lower.includes("create") || lower.includes("image")) {
-    const designPrompt = "Professional architectural visualization, modern sustainable residential building with solar panels, green roof, large windows, eco-friendly materials, photorealistic rendering, 8K quality, architectural digest style, masterpiece";
-    response = {
-      type: "design",
-      content: "I've generated an eco-optimized design concept based on your requirements:",
-      data: {
-        title: "Sustainable Residential Design",
-        imageUrl: `https://image.pollinations.ai/prompt/${encodeURIComponent(designPrompt)}?width=1024&height=768&nologo=true&private=true&model=flux-pro`,
-        specs: [
-          { label: "Energy Rating", value: "A+" },
-          { label: "Solar Gain", value: "-35%" },
-          { label: "Material Cost", value: "EGP 890/m²" },
-          { label: "CO₂ Impact", value: "-42%" },
-        ],
-      },
-    };
   } else {
     response = {
       type: "text",
-      content: "I can help you with material sourcing, bill analysis, cost optimization, and sustainability reports. What would you like to explore?",
+      content: "I can help with material sourcing, bill analysis, cost optimization, and sustainability reports. What would you like to explore?\n\n_⚠️ Demo mode - chat API unavailable._",
     };
   }
 
